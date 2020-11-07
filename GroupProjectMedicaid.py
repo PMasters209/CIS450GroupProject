@@ -7,7 +7,6 @@ Created on Tue Oct 20 14:58:03 2020
 
 import pandas as pd
 import numpy as np
-import matplotlib.pyplot as plt
 
 records = pd.read_csv('./State_Drug_Utilization_Data_2020.csv')
 drugs = pd.read_csv('./product.csv')
@@ -32,8 +31,9 @@ realrec['Cost per Unit'] = realrec['Medicaid Amount Reimbursed'] / realrec['Unit
 # which requires a minimum of 4 values in each field, zfill takes it to that minimum
 Stringify('Labeler Code')
 Stringify('Product Code')
-realrec['Product NDC'] = realrec['Labeler Code'] + '-' + realrec['Product Code'] 
-realrec.to_csv('CleanedRecords.csv', index = True, header = True)
+realrec['Product NDC'] = realrec['Labeler Code'] + '-' + realrec['Product Code']
+joined = realrec.join(drugs.set_index('PRODUCTNDC'), on = 'Product NDC') 
+joined.to_csv('CleanedRecords.csv', index = True, header = True)
 
 #Which drug is most prescribed?
 grouped = realrec.groupby('Product Name').agg({'Units Reimbursed' : 'sum', 'Number of Prescriptions': 'sum' , 'Medicaid Amount Reimbursed' : 'mean', 'Non Medicaid Amount Reimbursed' : 'mean', 'Cost per Unit' : 'mean'})
